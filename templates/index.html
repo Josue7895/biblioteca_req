@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Biblioteca Digital</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #1a1a1a;
+      color: #f2f2f2;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: linear-gradient(90deg, #4CAF50, #2e8b57);
+      padding: 20px;
+      text-align: center;
+    }
+    header h1 {
+      margin: 0;
+      color: white;
+    }
+    .container {
+      width: 80%;
+      margin: 30px auto;
+    }
+    .upload-box {
+      background: #2a2a2a;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      text-align: center;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+    .upload-box input[type="file"] {
+      margin: 15px 0;
+    }
+    .btn {
+      padding: 12px 20px;
+      background: #4CAF50;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .btn:hover {
+      background: #45a049;
+      transform: scale(1.05);
+    }
+    h2 {
+      border-bottom: 3px solid #4CAF50;
+      padding-bottom: 5px;
+      margin-bottom: 20px;
+    }
+    .books {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background: #2a2a2a;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 0 10px rgba(0,0,0,0.4);
+      transition: transform 0.3s ease;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+    }
+    .card p {
+      margin: 0;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>📚 Biblioteca Digital</h1>
+  </header>
+
+  <div class="container">
+    <div class="upload-box">
+      <h2>Subir libro (PDF)</h2>
+      <form action="/upload" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" accept=".pdf" required>
+        <br>
+        <button class="btn" type="submit">📤 Subir libro</button>
+      </form>
+    </div>
+
+    <h2>Libros disponibles</h2>
+    <div class="books">
+      {% for file in files %}
+        <div class="card">
+          <p>{{ file }}</p>
+          <a class="btn" href="/download/{{ file }}">📥 Descargar</a>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</body>
+</html>
