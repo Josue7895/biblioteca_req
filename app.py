@@ -28,5 +28,4 @@ def upload_file():
 def download_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename, as_attachment=True)
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+# 👇 Eliminar app.run() porque Gunicorn se encarga en Render
