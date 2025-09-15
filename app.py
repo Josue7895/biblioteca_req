@@ -3,7 +3,8 @@ import os
 
 app = Flask(__name__)
 
-UPLOAD_FOLDER = os.path.dirname(os.path.abspath(__file__))
+UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "uploads")
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 @app.route('/')
@@ -28,4 +29,6 @@ def upload_file():
 def download_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename, as_attachment=True)
 
-# 👇 Eliminar app.run() porque Gunicorn se encarga en Render
+if __name__ == "__main__":
+    app.run()
+
