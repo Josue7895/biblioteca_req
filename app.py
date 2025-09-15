@@ -1,31 +1,59 @@
-from flask import Flask, render_template, request, send_from_directory
+from flask import Flask, render_template, request, send_from_directory, abort
+from werkzeug.utils import secure_filename
 import os
 
 app = Flask(__name__)
 
-UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)))
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+# Carpeta donde estarán los PDFs (biblioteca/static/libros)
+UPLOAD_FOLDER = os.path.join(app.root_path, "static", "libros")
+ALLOWED_EXTENSIONS = {".pdf"}
 
-@app.route('/')
+# Asegura que exista localmente (en Render puede ser solo lectura)
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+
+
+def allowed_file(filename: str) -> bool:
+    return os.path.splitext(filename.lower())[1] in ALLOWED_EXTENSIONS
+
+
+@app.route("/")
 def index():
-    files = [f for f in os.listdir(app.config['UPLOAD_FOLDER']) if f.endswith('.pdf')]
-    return render_template('index.html', files=files)
+    # Lista todos los PDFs dentro de static/libros
+    try:
+        files = sorted(
+            [f for f in os.listdir(app.config["UPLOAD_FOLDER"]) if f.lower().endswith(".pdf")]
+        )
+    except FileNotFoundError:
+        files = []
+    return render_template("index.html", files=files)
 
-@app.route('/upload', methods=['POST'])
+
+@app.route("/upload", methods=["POST"])
 def upload_file():
-    if 'file' not in request.files:
-        return "No se subió archivo"
-    file = request.files['file']
-    if file.filename == '':
-        return "Archivo vacío"
-    if file and file.filename.endswith('.pdf'):
-        filepath = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
-        file.save(filepath)
+    # Subida opcional (útil en local; en Render puede no persistir)
+    if "file" not in request.files:
+        abort(400, "No se envió ningún archivo")
+    file = request.files["file"]
+    if file.filename == "":
+        abort(400, "Archivo vacío")
+    if allowed_file(file.filename):
+        safe_name = secure_filename(file.filename)
+        save_path = os.path.join(app.config["UPLOAD_FOLDER"], safe_name)
+        file.save(save_path)
         return "Libro subido con éxito"
-    return "Formato no permitido"
+    abort(400, "Formato no permitido (solo PDF)")
 
-@app.route('/download/<filename>')
+
+@app.route("/download/<path:filename>")
 def download_file(filename):
-    return send_from_directory(app.config['UPLOAD_FOLDER'], filename, as_attachment=True)
+    # Descarga segura desde static/libros
+    if not allowed_file(filename):
+        abort(404)
+    return send_from_directory(app.config["UPLOAD_FOLDER"], filename, as_attachment=True)
 
-# ⚠️ NO pongas app.run() aquí
+
+if __name__ == "__main__":
+    # Modo local. En Render se usa gunicorn con el Procfile (web: gunicorn app:app)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=True)

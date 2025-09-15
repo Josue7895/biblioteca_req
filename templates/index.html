@@ -1,108 +1,52 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Biblioteca Digital</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #1a1a1a;
-      color: #f2f2f2;
-      margin: 0;
-      padding: 0;
-    }
-    header {
-      background: linear-gradient(90deg, #4CAF50, #2e8b57);
-      padding: 20px;
-      text-align: center;
-    }
-    header h1 {
-      margin: 0;
-      color: white;
-    }
-    .container {
-      width: 80%;
-      margin: 30px auto;
-    }
-    .upload-box {
-      background: #2a2a2a;
-      padding: 20px;
-      border-radius: 10px;
-      margin-bottom: 30px;
-      text-align: center;
-      box-shadow: 0 0 10px rgba(0,0,0,0.5);
-    }
-    .upload-box input[type="file"] {
-      margin: 15px 0;
-    }
-    .btn {
-      padding: 12px 20px;
-      background: #4CAF50;
-      border: none;
-      border-radius: 8px;
-      color: white;
-      cursor: pointer;
-      font-size: 16px;
-      transition: all 0.3s ease;
-      text-decoration: none;
-      display: inline-block;
-    }
-    .btn:hover {
-      background: #45a049;
-      transform: scale(1.05);
-    }
-    h2 {
-      border-bottom: 3px solid #4CAF50;
-      padding-bottom: 5px;
-      margin-bottom: 20px;
-    }
-    .books {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 20px;
-    }
-    .card {
-      background: #2a2a2a;
-      padding: 20px;
-      border-radius: 10px;
-      text-align: center;
-      box-shadow: 0 0 10px rgba(0,0,0,0.4);
-      transition: transform 0.3s ease;
-    }
-    .card:hover {
-      transform: translateY(-5px);
-    }
-    .card p {
-      margin: 0;
-      font-weight: bold;
-      margin-bottom: 10px;
-    }
+    body{margin:0;background:#0f1115;color:#eaecef;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto;}
+    header{background:#22c55e;color:#05140a;padding:16px 20px;font-weight:700;font-size:20px;display:flex;align-items:center;gap:10px}
+    main{max-width:1100px;margin:28px auto;padding:0 16px}
+    .panel{background:#1a1f2b;border:1px solid #2a3346;border-radius:14px;padding:22px;margin-bottom:24px}
+    h2{margin:0 0 14px 0;font-size:20px}
+    .books{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+    .card{background:#121622;border:1px solid #263147;border-radius:14px;padding:16px}
+    .title{margin:0 0 12px 0;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .btn{display:inline-flex;align-items:center;gap:8px;background:#22c55e;color:#07140a;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:600}
+    .btn:hover{filter:brightness(1.05)}
+    .upload{display:flex;gap:10px;align-items:center}
+    input[type="file"]{color:#9fb0cc}
+    hr{border:0;border-top:1px solid #263147;margin:14px 0}
   </style>
 </head>
 <body>
-  <header>
-    <h1>📚 Biblioteca Digital</h1>
-  </header>
-
-  <div class="container">
-    <div class="upload-box">
+  <header>📚 Biblioteca Digital</header>
+  <main>
+    <section class="panel">
       <h2>Subir libro (PDF)</h2>
-      <form action="/upload" method="post" enctype="multipart/form-data">
-        <input type="file" name="file" accept=".pdf" required>
-        <br>
-        <button class="btn" type="submit">📤 Subir libro</button>
+      <form class="upload" action="/upload" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" accept="application/pdf" />
+        <button class="btn" type="submit">⬆️ Subir</button>
       </form>
-    </div>
+    </section>
 
-    <h2>Libros disponibles</h2>
-    <div class="books">
-      {% for file in files %}
-        <div class="card">
-          <p>{{ file }}</p>
-          <a class="btn" href="/download/{{ file }}">📥 Descargar</a>
-        </div>
-      {% endfor %}
-    </div>
-  </div>
+    <section class="panel">
+      <h2>Libros disponibles</h2>
+      <hr>
+      <div class="books">
+        {% for file in files %}
+          <div class="card">
+            <p class="title">{{ file }}</p>
+            <a class="btn" href="/download/{{ file }}">⬇️ Descargar</a>
+          </div>
+        {% else %}
+          <p>No hay PDFs en <code>static/libros</code>.</p>
+        {% endfor %}
+      </div>
+    </section>
+  </main>
 </body>
 </html>
